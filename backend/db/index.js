@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-mongoose.connect("mongodb+srv://stanishq696969:u4vkB7xEkTjUYzdU@cluster0.5m4lgjn.mongodb.net/")
+mongoose.connect("use your own db link")
 
 const userSchema=new mongoose.Schema({
     username:String,
