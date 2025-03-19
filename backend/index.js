@@ -5,11 +5,16 @@ const accountRouter = require('./routes/account');
 const userRouter = require('./routes/user');
 
 // Correct CORS configuration
+const allowedOrigins = [
+  'https://sonic-fund.vercel.app/',
+  'https://sonic-fund-backend.vercel.app/'
+];
+
+
 app.use(cors({
-    origin: 'https://sonic-fund.vercel.app', // Allow requests from your frontend
-    methods: 'GET, POST, PUT, DELETE, OPTIONS',
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // Allow cookies/auth headers if needed
+  origin: allowedOrigins,
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true 
 }));
 
 // Middleware for parsing request bodies
