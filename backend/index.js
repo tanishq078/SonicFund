@@ -1,31 +1,45 @@
 const express = require('express');
-const app = express();
 const cors = require('cors'); 
 const accountRouter = require('./routes/account');
 const userRouter = require('./routes/user');
 
-// ✅ Allow all origins (for production, restrict this)
+const app = express();
+
+// Allowed Origins (Without Trailing Slash)
+const allowedOrigins = [
+  'https://sonic-fund.vercel.app',
+  'https://sonic-fund-backend.vercel.app'
+];
+
+// Correct CORS Configuration
 app.use(cors({
-  origin: "*",  // Allows all origins
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization",
-  credentials: false  // Set to `true` only if using cookies/sessions
+  credentials: true 
 }));
 
-// Middleware for parsing request bodies
+// Middleware for Parsing JSON Requests
 app.use(express.json());
 
+// Handle Preflight Requests
+app.options('*', cors());
+
+// Routes
 app.use('/user', userRouter);
 app.use('/account', accountRouter);
 
-const PORT = process.env.PORT || 3000;  // Use environment variable for Vercel
+const PORT = 3000;
 
 app.get("/", (req, res) => {
   res.send("Server Started!");
 });
-
-// ✅ Handle preflight requests properly
-app.options('*', cors());
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
