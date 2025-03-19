@@ -16,7 +16,7 @@ const Firstpage = () => {
       }
 
       try {
-        const response = await axios.get("http://localhost:3000/user/check", {
+        const response = await axios.get("https://sonic-fund-backend.vercel.app/user/check", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

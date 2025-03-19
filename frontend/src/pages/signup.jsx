@@ -61,7 +61,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/user/signup", {
+      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
         username,
         firstname,
         lastname,

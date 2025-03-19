@@ -22,7 +22,7 @@ const [message,setmessage]=useState("")
       else{
       try{
       const token=localStorage.getItem('token')
-   const response = axios.post("http://localhost:3000/account/transfer",{
+   const response = axios.post("https://sonic-fund-backend.vercel.app/account/transfer",{
     to:id,
     amount:amount
     

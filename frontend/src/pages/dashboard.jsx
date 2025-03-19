@@ -21,7 +21,7 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/account/balance', {
+        const response = await axios.get('https://sonic-fund-backend.vercel.app/account/balance', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
