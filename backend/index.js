@@ -4,7 +4,12 @@ const cors = require('cors');
 const accountRouter = require('./routes/account');
 const userRouter = require('./routes/user');
 
-app.use(cors());
+
+app.use(cors({
+  origin: 'https://sonic-fund.vercel.app', // Allow frontend domain
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true // Allow cookies/auth headers
+}));
 // Middleware for parsing request bodies
 app.use(express.json()); // Built-in JSON parser
 
