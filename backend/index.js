@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 // Handle preflight requests
-app.options('*', cors());
+// app.options('*', cors());
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
