@@ -76,7 +76,7 @@ router.get('/signin',usermiddleware ,async(req,res)=>{
   
   
   const token=jwt.sign({userId:user},JWT_SECRET)
-  
+   console.log(token);
     res.json({msg:"sign in successfully",
       token:token,
       

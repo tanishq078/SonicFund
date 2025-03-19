@@ -47,41 +47,54 @@ const [message,setmessage]=useState("")
 
   
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-200">
-  <div className="flex flex-col justify-start items-center w-80 rounded-lg shadow-2xl h-auto bg-white p-6">
-    <div className="font-bold text-3xl mb-6 text-gray-800">Send Money</div>
-    
-    <div className="flex justify-start">
-      <Users 
-        className="flex rounded-full border-inherit border-2 mt-3 mb-2 bg-green-500 text-3xl items-center justify-center font-semibold" 
-        users={name} 
-        firstletter={name.charAt(0).toUpperCase()}  
-        color="#5edc5e"
-      />
+    <div className="flex justify-center items-center min-h-screen bg-gray-950 text-gray-200">
+  <div className="flex flex-col justify-start items-center w-80 rounded-lg shadow-2xl bg-gray-900 bg-opacity-90 backdrop-blur-md p-6">
+    {/* Header */}
+    <div className="font-extrabold text-3xl mb-6 text-gray-100 tracking-wide">
+      Send Money
     </div>
-    
-    <div className="mr-36 mb-2 font-semibold text-gray-700">Amount (in ₹)</div>
-    
-    <input 
+
+    {/* User Avatar */}
+    <div className="flex justify-center items-center mb-6">
+      <div
+        className="flex rounded-full border-4 border-red-600 h-16 w-16 bg-gradient-to-br from-red-600 to-gray-800 text-gray-100 text-2xl items-center justify-center font-semibold shadow-lg"
+        style={{ color: "#ffffff" }}
+      >
+        {name.charAt(0).toUpperCase()}
+      </div>
+    </div>
+
+    {/* Amount Label */}
+    <div className="mr-auto mb-2 font-semibold text-gray-400">
+      Amount (in ₹)
+    </div>
+
+    {/* Amount Input */}
+    <input
       onChange={(e) => setamount(e.target.value)}
-      className="shadow appearance-none border rounded-lg w-11/12 py-2 px-3 ml-2 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-teal-400"
+      className="shadow-md appearance-none border border-gray-700 bg-gray-800 text-gray-300 rounded-lg w-full py-2 px-3 mb-4 leading-tight focus:outline-none focus:ring focus:ring-red-500"
       id="amount"
       type="number"
       min="0"
       step="0.01"
       placeholder="Enter Amount"
     />
-    
-    <div 
-      onClick={transfer} 
-      className="flex bg-green-600 w-11/12 mt-5 hover:bg-green-800 cursor-pointer rounded-lg text-white text-lg h-12 justify-center items-center transition duration-300"
+
+    {/* Transfer Button */}
+    <div
+      onClick={transfer}
+      className="flex bg-gradient-to-br from-red-700 to-black w-full mt-4 cursor-pointer rounded-lg text-white text-lg h-12 justify-center items-center font-bold shadow-lg hover:from-red-800 hover:to-gray-900 hover:scale-105 transition-transform duration-300"
     >
       Initiate Transfer
     </div>
-    
-    {message && <div className="text-red-500 text-sm mt-2">{message}</div>}
+
+    {/* Error Message */}
+    {message && (
+      <div className="text-red-500 text-sm mt-4 text-center">{message}</div>
+    )}
   </div>
 </div>
+
   );
 };
 

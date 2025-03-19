@@ -64,59 +64,67 @@ const Signin = () => {
     };
 
     return (
-      <div className="flex justify-center items-center bg-gradient-to-r from-blue-500 to-purple-500 min-h-screen">
-      <div className="flex bg-white shadow-lg rounded-3xl w-full max-w-md p-8">
-          <form className="w-full" onSubmit={handleSubmit}>
-              <h2 className="text-3xl font-bold text-center text-gray-800">Sign In</h2>
-              <p className="text-center text-gray-600 mb-6">Enter your credentials to sign in to your account</p>
-  
-              <div className="mb-4">
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-                  <input
-                      type="email"
-                      id="username"
-                      placeholder="Enter your username"
-                      className="w-full p-3 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      onChange={(e) => setUsername(e.target.value)}
-                      autoComplete="username"
-                  />
-              </div>
-  
-              <div className="mb-6">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                  <input
-                      type="password"
-                      id="password"
-                      placeholder="Enter your password"
-                      className="w-full p-3 mt-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="current-password"
-                  />
-              </div>
-  
-              <div className="flex flex-col text-sm text-red-500 mb-4">
-                  {message}
-              </div>
-  
-              <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-              >
-                  Sign In
-              </button>
-  
-              <div className="flex justify-center mt-6">
-                  <div className="text-sm text-gray-600">Don't have an account? </div>
-                  <div
-                      onClick={goToSignUp}
-                      className="text-sm text-blue-500 cursor-pointer hover:text-blue-700 underline ml-1"
-                  >
-                      Sign up
-                  </div>
-              </div>
-          </form>
+        <div className="flex justify-center items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen text-white">
+  <div className="flex bg-gray-900 bg-opacity-70 shadow-lg rounded-3xl w-full max-w-md p-8 backdrop-blur-md">
+    <form className="w-full" onSubmit={handleSubmit}>
+      <h2 className="text-3xl font-extrabold text-center text-red-500">Sign In</h2>
+      <p className="text-center text-gray-400 mb-6">Enter your credentials to sign in to your account</p>
+
+      {/* Username Field */}
+      <div className="mb-4">
+        <label htmlFor="username" className="block text-sm font-medium text-gray-300">
+          Username
+        </label>
+        <input
+          type="email"
+          id="username"
+          placeholder="Enter your username"
+          className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+          onChange={(e) => setUsername(e.target.value)}
+          autoComplete="username"
+        />
       </div>
+
+      {/* Password Field */}
+      <div className="mb-6">
+        <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
+        />
+      </div>
+
+      {/* Error Message */}
+      <div className="text-sm text-red-500 mb-4">{message}</div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transform transition-all hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+      >
+        Sign In
+      </button>
+
+      {/* Footer */}
+      <div className="flex justify-center mt-6 text-sm">
+        <p className="text-gray-400">Don't have an account?</p>
+        <button
+          onClick={goToSignUp}
+          className="text-red-500 hover:underline ml-1 focus:outline-none"
+        >
+          Sign Up
+        </button>
+      </div>
+    </form>
   </div>
+</div>
+
     );
 };
 
