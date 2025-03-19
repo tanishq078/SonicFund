@@ -5,37 +5,32 @@ const userRouter = require('./routes/user');
 
 const app = express();
 
-// Allowed Origins (Without Trailing Slash)
-const allowedOrigins = [
-  'https://sonic-fund.vercel.app',
-  'https://sonic-fund-backend.vercel.app'
-];
+// ✅ Explicitly Allow Your Frontend
+const allowedOrigins = ['https://sonic-fund.vercel.app']; 
 
-// Correct CORS Configuration
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: "GET,POST,PUT,DELETE",
+  origin: allowedOrigins, 
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
   allowedHeaders: "Content-Type,Authorization",
-  credentials: true 
+  credentials: true  // Required for handling cookies or authorization headers
 }));
 
-// Middleware for Parsing JSON Requests
+// ✅ Handle Preflight Requests Properly
+app.options('*', (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://sonic-fund.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  return res.status(200).end();
+});
+
+// Middleware for parsing JSON
 app.use(express.json());
 
-// Handle Preflight Requests
-app.options('*', cors());
-
-// Routes
 app.use('/user', userRouter);
 app.use('/account', accountRouter);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.send("Server Started!");
