@@ -1,18 +1,13 @@
-const express = require("express")
-const usermiddleware = require("../Middleware/user")
-const { User, Account } = require("../db")
-const router = express.Router()
-
+const express = require("express");
+const { User, Account } = require("../db");
 const jwt = require('jsonwebtoken');
-const authMiddleware = require("../Middleware/auth")
+const authMiddleware = require("../Middleware/auth");
 const { uservalidate, updateone } = require('../validate/validate');
-const JWT_SECRET = "hello"
+const JWT_SECRET = "hello";  // Use a more secure secret in production
 
-
-
+const router = express.Router();
 
 router.post('/signup', async (req, res) => {
-
   const validationResult = uservalidate.safeParse(req.body);
 
   if (!validationResult.success) {
@@ -20,66 +15,55 @@ router.post('/signup', async (req, res) => {
       msg: 'Validation failed',
       errors: validationResult.error.errors
     });
-  }
-  else {
+  } else {
     const finduser = await User.findOne({
       username: req.body.username
+    });
 
-    })
     if (finduser) {
-      res.json("This username already exist try different")
-    }
-    else {
-
+      return res.json("This username already exists, try a different one");
+    } else {
       const user = await User.create({
-
         username: req.body.username,
         password: req.body.password,
         firstname: req.body.firstname,
         lastname: req.body.lastname
+      });
 
-      })
-
-
-
-      const userId = user
-
-
-
+      // Create account with random balance
       await Account.create({
-        userId,
+        userId: user._id,
         balance: 1 + Math.random() * 10000
-      })
+      });
 
-
-
-
-
-      const token = jwt.sign({ userId }, JWT_SECRET)
+      // Generate JWT token with user._id
+      const token = jwt.sign({ userId: user._id }, JWT_SECRET);
 
       res.json({
         msg: "Account Created Successfully",
         token: token
-
-      })
+      });
     }
   }
-})
+});
 
+router.post('/signin', async (req, res) => {
+  const { username, password } = req.body;
 
+  // Find user by username and password (simple authentication)
+  const user = await User.findOne({ username, password });
+  if (!user) {
+    return res.status(400).json({ msg: "Invalid username or password" });
+  }
 
+  // Generate JWT token with user._id
+  const token = jwt.sign({ userId: user._id }, JWT_SECRET);
 
-router.post('/signin', usermiddleware, async (req, res) => {
-  const user = req.user;
-
-  const token = jwt.sign({ userId: user }, JWT_SECRET);
-  console.log(token);
   res.json({
     msg: "Sign in successfully",
     token: token
   });
 });
-
 
 router.put('/update', authMiddleware, async (req, res) => {
   const updation = updateone.safeParse(req.body);
@@ -91,34 +75,28 @@ router.put('/update', authMiddleware, async (req, res) => {
     });
   }
 
-
   const result = await User.updateOne(
-    { _id: req.userId }, // Find the document by _id
-    { $set: req.body }  // Update fields specified in req.body
+    { _id: req.userId },
+    { $set: req.body }
   );
 
   if (result.modifiedCount === 0) {
     return res.status(404).json({ msg: "User not found or no changes made" });
   }
 
-
   res.json({ msg: "Profile updated" });
-
-
 });
-
 
 router.get('/bulk', authMiddleware, async (req, res) => {
   const filter = req.query.filter || "";
-  const userId = req.userId;  // Assuming `req.user._id` is available from authentication middleware
-
+  const userId = req.userId;
 
   const users = await User.find({
     $and: [
-      { _id: { $ne: userId } },  // Exclude the user's own profile
+      { _id: { $ne: userId } },
       {
         $or: [
-          { firstname: { "$regex": filter, "$options": "i" } },  // Case-insensitive search
+          { firstname: { "$regex": filter, "$options": "i" } },
           { lastname: { "$regex": filter, "$options": "i" } }
         ]
       }
@@ -133,25 +111,15 @@ router.get('/bulk', authMiddleware, async (req, res) => {
       _id: user._id
     }))
   });
-
 });
 
-
-
-
-
 router.get('/check', authMiddleware, (req, res) => {
-  res.json({ msg: "user is correct" })
-})
-
-
+  res.json({ msg: "User is authenticated" });
+});
 
 router.get('/info', authMiddleware, (req, res) => {
-  const user = req.user
-  res.json({
-    user: user
-  })
-})
-
+  const user = req.user;
+  res.json({ user: user });
+});
 
 module.exports = router;

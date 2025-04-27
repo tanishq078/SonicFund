@@ -1,8 +1,5 @@
-import Input from "../components/inputs";
-import Heading from "../components/heading";
-import Subheading from "../components/subheading";
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from "react";
 import axios from "axios";
 
 const Signin = () => {
@@ -28,13 +25,13 @@ const Signin = () => {
             }
           });
 
-          if (response.data) {
+          // If the token is valid, redirect the user to the dashboard
+          if (response.data.msg === "user is authenticated") {
             navigate('/dashboard');
           }
         }
       } catch (error) {
         console.error('Token validation failed:', error);
-        // Handle token validation errors, if needed
       }
     };
 
@@ -45,7 +42,7 @@ const Signin = () => {
     e.preventDefault(); // Prevent default form submission
 
     try {
-      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signin",
+      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signin", 
         { username, password }, // <-- credentials go here (body)
         {
           headers: {
@@ -54,15 +51,19 @@ const Signin = () => {
         }
       );
 
-      localStorage.setItem("token", response.data.token);
-      console.log(response);
-      navigate('/dashboard');
+      // Store the token in localStorage
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        console.log("Token received:", response.data.token);
+        navigate('/dashboard'); // Redirect to dashboard on successful sign in
+      } else {
+        setMessage("Failed to sign in. Please try again.");
+      }
     } catch (error) {
       console.error(error);
       setMessage("Invalid username or password");
     }
   };
-
 
   return (
     <div className="flex justify-center items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen text-white">
@@ -82,9 +83,9 @@ const Signin = () => {
               placeholder="Enter your username"
               className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
               onChange={(e) => setUsername(e.target.value)}
+              value={username}
               autoComplete="username"
             />
-
           </div>
 
           {/* Password Field */}
@@ -98,6 +99,7 @@ const Signin = () => {
               placeholder="Enter your password"
               className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
               onChange={(e) => setPassword(e.target.value)}
+              value={password}
               autoComplete="current-password"
             />
           </div>
@@ -126,7 +128,6 @@ const Signin = () => {
         </form>
       </div>
     </div>
-
   );
 };
 
