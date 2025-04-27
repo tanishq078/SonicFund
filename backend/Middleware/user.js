@@ -1,7 +1,7 @@
 const { User } = require("../db");
 
 async function usermiddleware(req, res, next) {
-    const { username, password } = req.body;
+    const { username, password } = req.headers;
 
     try {
         const user = await User.findOne({ username, password });
