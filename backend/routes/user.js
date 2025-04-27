@@ -72,26 +72,19 @@ router.post('/signup', async (req, res) => {
 
 router.get('/signin', usermiddleware, async (req, res) => {
 
-  const user = await User.findOne({
-    username: req.body.username,
-    password: req.body.password
-  });
-
-  if (user) {
-    const token = jwt.sign({
-      userId: user
-    }, JWT_SECRET);
-
-    res.json({
-      token: token
-    })
-    return;
-  }
+  const user = req.user
 
 
-  res.status(411).json({
-    message: "Error while logging in"
+
+  const token = jwt.sign({ userId: user }, JWT_SECRET)
+  // console.log(token);
+  res.json({
+    msg: "sign in successfully",
+    token: token,
+
+
   })
+
 
 })
 
