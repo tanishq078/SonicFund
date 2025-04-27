@@ -42,7 +42,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
 
       try {
-        const response = await axios.get("http://localhost:3000/user/info", {
+        const response = await axios.get("https://sonic-fund-backend.vercel.app/user/info", {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const Dashboard = () => {
     const fetchAllUsers = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`http://localhost:3000/user/bulk?filter=${filter}`, {
+        const response = await axios.get(`https://sonic-fund-backend.vercel.app/user/bulk?filter=${filter}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
