@@ -48,18 +48,18 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const validationMessage = validatePassword(password);
     if (validationMessage) {
       setMessage(validationMessage);
       return;
     }
-
+  
     if (!username || !firstname || !lastname || !password) {
       setMessage("All fields are required");
       return;
     }
-
+  
     try {
       const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
         username,
@@ -67,9 +67,15 @@ const Signup = () => {
         lastname,
         password
       });
-
-      localStorage.setItem("token", response.data.token);
-      navigate('/dashboard');
+  
+      console.log('Signup Response:', response.data); // 🚀 See response structure
+  
+      if (response.data && response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        navigate('/dashboard');
+      } else {
+        setMessage('Signup failed: No token received');
+      }
     } catch (error) {
       console.error("Signup error:", error);
       if (error.response && error.response.data) {
@@ -79,6 +85,7 @@ const Signup = () => {
       }
     }
   };
+  
 
   const goToSignIn = () => {
     navigate('/signin');
