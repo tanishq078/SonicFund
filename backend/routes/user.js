@@ -12,6 +12,7 @@ const JWT_SECRET = "hello"
 
 
 router.post('/signup', async (req, res) => {
+
   const validationResult = uservalidate.safeParse(req.body);
 
   if (!validationResult.success) {
@@ -20,32 +21,50 @@ router.post('/signup', async (req, res) => {
       errors: validationResult.error.errors
     });
   }
+  else {
+    const finduser = await User.findOne({
+      username: req.body.username
 
-  const finduser = await User.findOne({ username: req.body.username });
+    })
+    if (finduser) {
+      res.json("This username already exist try different")
+    }
+    else {
 
-  if (finduser) {
-    return res.status(409).json({ msg: "This username already exists. Try a different one." });
+      const user = await User.create({
+
+        username: req.body.username,
+        password: req.body.password,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname
+
+      })
+
+
+
+      const userId = user
+
+
+
+      await Account.create({
+        userId,
+        balance: 1 + Math.random() * 10000
+      })
+
+
+
+
+
+      const token = jwt.sign({ userId }, JWT_SECRET)
+
+      res.json({
+        msg: "Account Created Successfully",
+        token: token
+
+      })
+    }
   }
-
-  const user = await User.create({
-    username: req.body.username,
-    password: req.body.password,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname
-  });
-
-  await Account.create({
-    userId: user._id,    // Only _id here
-    balance: 1 + Math.random() * 10000
-  });
-
-  const token = jwt.sign({ userId: user._id }, JWT_SECRET); // Correct payload
-
-  res.status(201).json({
-    msg: "Account created successfully",
-    token: token
-  });
-});
+})
 
 
 
@@ -53,14 +72,13 @@ router.post('/signup', async (req, res) => {
 router.post('/signin', usermiddleware, async (req, res) => {
   const user = req.user;
 
-  const token = jwt.sign({ userId: user._id }, JWT_SECRET); // Correct payload
-
+  const token = jwt.sign({ userId: user }, JWT_SECRET);
+  console.log(token);
   res.json({
-    msg: "Sign in successful",
+    msg: "Sign in successfully",
     token: token
   });
 });
-
 
 
 router.put('/update', authMiddleware, async (req, res) => {
