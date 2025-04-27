@@ -1,24 +1,21 @@
-const {User} = require("../db")
-async function usermiddleware(req,res,next){
-    const username=req.body.username
-    const password = req.body.password
+const { User } = require("../db");
 
-   const user =  await User.findOne({
-        username:username,
-        password: password
-    })
-    
-    .then(function(user){
-        if(user){
-            
-            
-          req.user=user
+async function usermiddleware(req, res, next) {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ username, password });
+
+        if (user) {
+            req.user = user;
             next();
+        } else {
+            res.status(404).json({ msg: "User does not exist" });
         }
-        else{
-            res.json({msg:"user does not exist"})
-            
-        }
-    })
+    } catch (err) {
+        console.error("Error in usermiddleware:", err);
+        res.status(500).json({ msg: "Internal server error" });
+    }
 }
-module.exports= usermiddleware
+
+module.exports = usermiddleware;
