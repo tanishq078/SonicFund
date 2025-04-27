@@ -42,26 +42,27 @@ const Signin = () => {
     }, [navigate]);
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission
-
-        try {
-            const response = await axios.get("https://sonic-fund-backend.vercel.app/user/signin", {
-                headers: {
-                    'Content-Type': 'application/json',
-                
-                username,
-                password
-          }  }, {
-                
-            });
-
-            localStorage.setItem("token", response.data.token);
-            console.log(response)
-            navigate('/dashboard');
-        } catch (error) {
-            setMessage("Invalid username or password");
-        }
-    };
+      e.preventDefault(); // Prevent default form submission
+  
+      try {
+          const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signin", 
+              { username, password }, // <-- credentials go here (body)
+              {
+                  headers: {
+                      'Content-Type': 'application/json',
+                  }
+              }
+          );
+  
+          localStorage.setItem("token", response.data.token);
+          console.log(response);
+          navigate('/dashboard');
+      } catch (error) {
+          console.error(error);
+          setMessage("Invalid username or password");
+      }
+  };
+  
 
     return (
         <div className="flex justify-center items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen text-white">
