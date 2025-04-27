@@ -40,7 +40,12 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem('token');
-
+  
+      if (!token) {
+        console.error('No token found, user is not authenticated');
+        return;
+      }
+  
       try {
         const response = await axios.get("https://sonic-fund-backend.vercel.app/user/info", {
           headers: {
@@ -48,35 +53,56 @@ const Dashboard = () => {
             'Content-Type': 'application/json',
           }
         });
-        setFirstname(response.data.user.firstname);
-        setLastname(response.data.user.lastname);
-        setUsername(response.data.user.username);
+  
+        // Ensure response data is valid and contains 'user' object
+        if (response && response.data && response.data.user) {
+          setFirstname(response.data.user.firstname);
+          setLastname(response.data.user.lastname);
+          setUsername(response.data.user.username);
+        } else {
+          console.error('Invalid user data format:', response.data);
+        }
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
     };
-
+  
     fetchUserInfo();
   }, []);
-
+  
   useEffect(() => {
     const fetchAllUsers = async () => {
       const token = localStorage.getItem('token');
+  
+      if (!token) {
+        console.error('No token found, user is not authenticated');
+        return;
+      }
+  
       try {
         const response = await axios.get(`https://sonic-fund-backend.vercel.app/user/bulk?filter=${filter}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
-          }
+          },
         });
-        setUsers(response.data.users);
+  
+        // Check if response and response.data are valid
+        if (response && response.data && Array.isArray(response.data.users)) {
+          setUsers(response.data.users);
+        } else {
+          console.error('Invalid data format:', response.data);
+          setUsers([]);  // Clear users in case of invalid data
+        }
       } catch (error) {
         console.error('Error fetching all users:', error);
+        setUsers([]);  // Clear users in case of error
       }
     };
-
+  
     fetchAllUsers();
   }, [filter]);
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');
