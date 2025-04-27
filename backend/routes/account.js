@@ -2,62 +2,56 @@ const express = require('express');
 const router = express.Router();
 const { Account } = require('../db');
 const authMiddleware = require('../Middleware/auth');
+const mongoose = require('mongoose');
 
-// ✅ Get balance of the current logged-in user
+// Route to get the balance of the current user
+// Assuming you have an accountController that handles balance retrieval
 router.get('/balance', authMiddleware, async (req, res) => {
   try {
-    const userId = req.userId; // From authMiddleware
-    const account = await Account.findOne({ userId });
+      const userId = req.userId; // Assuming you have user ID from the JWT token
+      const account = await Account.findOne({ userId });
+      
+      if (!account) {
+          return res.status(404).json({ message: "Account not found" });
+      }
 
-    if (!account) {
-      return res.status(404).json({ message: "Account not found" });
-    }
-
-    return res.status(200).json({ balance: account.balance });
+      res.json({ balance: account.balance });
   } catch (error) {
-    console.error('Error fetching balance:', error);
-    return res.status(500).json({ message: 'Server error while fetching balance' });
+      console.error('Error fetching balance:', error);
+      res.status(500).json({ message: 'Server error' });
   }
 });
 
-// ✅ Transfer amount to another user
+
 router.post('/transfer', authMiddleware, async (req, res) => {
-  try {
-    const { amount, to } = req.body;
-
-    // Basic validation
-    if (!amount || !to) {
-      return res.status(400).json({ message: 'Amount and recipient are required' });
-    }
-
-    const transferAmount = parseFloat(amount);
-    if (isNaN(transferAmount) || transferAmount <= 0) {
-      return res.status(400).json({ message: 'Invalid amount' });
-    }
-
-    const senderAccount = await Account.findOne({ userId: req.userId });
-    if (!senderAccount) {
-      return res.status(404).json({ message: 'Sender account not found' });
-    }
-
-    if (senderAccount.balance < transferAmount) {
-      return res.status(400).json({ message: 'Insufficient balance' });
-    }
-
-    const recipientAccount = await Account.findOne({ userId: to });
-    if (!recipientAccount) {
-      return res.status(404).json({ message: 'Recipient account not found' });
-    }
-
-    // Start the transfer
-    await Account.updateOne({ userId: req.userId }, { $inc: { balance: -transferAmount } });
-    await Account.updateOne({ userId: to }, { $inc: { balance: transferAmount } });
-
-    return res.status(200).json({ message: 'Transfer successful' });
-  } catch (error) {
-    console.error('Error during transfer:', error);
-    return res.status(500).json({ message: 'Server error during transfer' });
-  }
-});
+    
+      const { amount, to } = req.body;
+  
+      if (!amount || !to) {
+        return res.json({ msg: 'Amount and recipient required' });
+      }
+  
+      const transferAmount = parseFloat(amount);
+      if (isNaN(transferAmount) || transferAmount <= 0) {
+        return res.json({ msg: 'Invalid amount' });
+      }
+  
+      const account = await Account.findOne({ userId: req.userId });
+      if (!account || account.balance < transferAmount) {
+        return res.json({ msg: 'Insufficient balance' });
+      }
+  
+      const toAccount = await Account.findOne({ userId: to });
+      if (!toAccount) {
+        return res.json({ msg: 'Invalid recipient account' });
+      }
+  
+      await Account.updateOne({ userId: req.userId }, { $inc: { balance: -transferAmount } });
+      await Account.updateOne({ userId: to }, { $inc: { balance: transferAmount } });
+  
+      res.json({ msg: 'Transfer successful' });
+    
+  });
+  
 
 module.exports = router;
