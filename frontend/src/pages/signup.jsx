@@ -46,46 +46,46 @@ const Signup = () => {
     checkTokenValidity();
   }, [navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const validationMessage = validatePassword(password);
-    if (validationMessage) {
-      setMessage(validationMessage);
-      return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const validationMessage = validatePassword(password);
+  if (validationMessage) {
+    setMessage(validationMessage);
+    return;
+  }
+
+  if (!username || !firstname || !lastname || !password) {
+    setMessage("All fields are required");
+    return;
+  }
+
+  try {
+    const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
+      username,
+      firstname,
+      lastname,
+      password
+    });
+
+    console.log('Signup Response:', response.data); // 🚀 See response structure
+
+    if (response.data && response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      navigate('/dashboard');
+    } else {
+      setMessage('Signup failed: No token received');
     }
-  
-    if (!username || !firstname || !lastname || !password) {
-      setMessage("All fields are required");
-      return;
+  } catch (error) {
+    console.error("Signup error:", error);
+    if (error.response && error.response.data) {
+      setMessage(error.response.data.msg || "Signup failed");
+    } else {
+      setMessage("An unexpected error occurred");
     }
-  
-    try {
-      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
-        username,
-        firstname,
-        lastname,
-        password
-      });
-  
-      console.log('Signup Response:', response.data); // 🚀 See response structure
-  
-      if (response.data && response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        navigate('/dashboard');
-      } else {
-        setMessage('Signup failed: No token received');
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      if (error.response && error.response.data) {
-        setMessage(error.response.data.msg || "Signup failed");
-      } else {
-        setMessage("An unexpected error occurred");
-      }
-    }
-  };
-  
+  }
+};
+
 
   const goToSignIn = () => {
     navigate('/signin');
