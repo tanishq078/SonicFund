@@ -70,7 +70,7 @@ router.post('/signup', async (req, res) => {
 
 
 
-router.get('/signin', usermiddleware, async (req, res) => {
+router.post('/signin', usermiddleware, async (req, res) => {
 
   const user = req.user
 
