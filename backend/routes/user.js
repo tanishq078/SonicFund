@@ -69,32 +69,31 @@ router.post('/signup', async (req, res) => {
 
 
 
-router.post('/signin', async (req, res) => {
-  const { username, password } = req.body;
 
-  try {
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({
-        msg: 'Validation error',
-      });
-    }
-    if (user.password !== password) {
-      return res.status(400).json({
-        msg: 'Wrong Password!',
-      });
-    }
-    const token = jwt.sign({ userId: user }, JWT_SECRET);
-    return res.json({
-      msg: "Sign in successfully",
+router.get('/signin', usermiddleware, async (req, res) => {
+
+  const user = await User.findOne({
+    username: req.body.username,
+    password: req.body.password
+  });
+
+  if (user) {
+    const token = jwt.sign({
+      userId: user
+    }, JWT_SECRET);
+
+    res.json({
       token: token
-    });
-  } catch (error) {
-    return res.status(400).json({
-      msg: "Sign in failed!",
-    });
+    })
+    return;
   }
-});
+
+
+  res.status(411).json({
+    message: "Error while logging in"
+  })
+
+})
 
 
 router.put('/update', authMiddleware, async (req, res) => {
