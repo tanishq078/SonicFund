@@ -53,7 +53,8 @@ const Dashboard = () => {
             'Content-Type': 'application/json',
           }
         });
-  
+        console.log("User Info Response:", response.data);
+
         // Ensure response data is valid and contains 'user' object
         if (response && response.data && response.data.user) {
           setFirstname(response.data.user.firstname);
