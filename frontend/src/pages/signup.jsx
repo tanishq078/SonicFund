@@ -1,19 +1,15 @@
-import Input from "../components/inputs";
-import Heading from "../components/heading";
-import Subheading from "../components/subheading";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(""); // used as email
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(""); // Email input, still needed to send OTP
   const [otp, setOtp] = useState("");
-  const [userOtpMap, setUserOtpMap] = useState({}); // Store OTPs per username
+  const [generatedOtp, setGeneratedOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [message, setMessage] = useState("");
@@ -58,20 +54,18 @@ const Signup = () => {
   };
 
   const sendOtp = async () => {
-    if (!email || !firstname || !username) {
-      setMessage("Please enter email, first name, and username before sending OTP");
+    if (!username || !firstname) {
+      setMessage("Please enter email (username) and first name before sending OTP");
       return;
     }
 
-    const newOtp = generateOtp();
-
-    // Store OTP mapped to username
-    setUserOtpMap((prev) => ({ ...prev, [username]: newOtp }));
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
 
     const templateParams = {
       to_name: firstname,
-      to_email: email,
-      otp_code: newOtp,
+      to_email: username, // username used as email
+      otp_code: otpCode,
     };
 
     try {
@@ -90,8 +84,7 @@ const Signup = () => {
   };
 
   const handleOtpVerification = () => {
-    const storedOtp = userOtpMap[username];
-    if (otp === storedOtp) {
+    if (otp === generatedOtp) {
       setIsOtpVerified(true);
       setMessage("OTP verified successfully");
     } else {
@@ -108,7 +101,7 @@ const Signup = () => {
       return;
     }
 
-    if (!username || !firstname || !lastname || !password || !email) {
+    if (!username || !firstname || !lastname || !password) {
       setMessage("All fields are required");
       return;
     }
@@ -161,15 +154,15 @@ const Signup = () => {
           </div>
 
           <div className="space-y-4">
-            {/* Email */}
+            {/* Username as Email */}
             <div>
-              <label htmlFor="email" className="block text-sm text-gray-300 mb-1">Email</label>
+              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Email</label>
               <input
-                id="email"
+                id="username"
                 type="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
@@ -195,7 +188,7 @@ const Signup = () => {
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
                 />
                 <button
                   type="button"
@@ -208,17 +201,6 @@ const Signup = () => {
             )}
 
             {/* Other Inputs */}
-            <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
-              <input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-            </div>
             <div>
               <label htmlFor="first" className="block text-sm text-gray-300 mb-1">First Name</label>
               <input
