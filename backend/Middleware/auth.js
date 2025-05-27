@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 
-const JWT_SECRET="hello"
+const JWT_SECRET="SONICFUND$123"
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers['authorization'];

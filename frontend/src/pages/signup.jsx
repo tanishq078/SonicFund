@@ -71,10 +71,10 @@ const Signup = () => {
 
     try {
       await emailjs.send(
-        "your_service_id",
-        "your_template_id",
+        "service_7qxqc9j",
+        "template_cxw284d",
         templateParams,
-        "your_public_key"
+        "S5Nz21BapCrBFseJN"
       );
       setIsOtpSent(true);
       setMessage("OTP sent to your email");
