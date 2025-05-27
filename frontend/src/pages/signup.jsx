@@ -46,7 +46,7 @@ const Signup = () => {
     checkTokenValidity();
   }, [navigate]);
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   const validationMessage = validatePassword(password);
@@ -72,7 +72,11 @@ const Signup = () => {
 
     if (response.data && response.data.token) {
       localStorage.setItem("token", response.data.token);
-      navigate('/dashboard');
+      
+      // Redirect to OTP Verification Page with email in state
+      navigate('/otp-verification', {
+        state: { email: username }
+      });
     } else {
       setMessage('Signup failed: No token received');
     }
@@ -85,6 +89,7 @@ const Signup = () => {
     }
   }
 };
+
 
 
   const goToSignIn = () => {
