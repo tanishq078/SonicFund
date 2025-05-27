@@ -23,7 +23,7 @@ const OtpVerification = () => {
 
     emailjs.send(
       "service_7qxqc9j",       // replace with your EmailJS service ID
-      "service_7qxqc9j",      // replace with your EmailJS template ID
+      "template_cxw284d",      // replace with your EmailJS template ID
       { to_email: userEmail, otp: newOtp },
       "S5Nz21BapCrBFseJN"        // replace with your EmailJS public key
     ).then(() => {
