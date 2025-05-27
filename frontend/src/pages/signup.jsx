@@ -1,20 +1,26 @@
+import Input from "../components/inputs";
+import Heading from "../components/heading";
+import Subheading from "../components/subheading";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import emailjs from "@emailjs/browser";
 
 const Signup = () => {
-  const [username, setUsername] = useState(""); // This is the email
+  const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    if (password && password.length < 8) {
+      return "Password should be at least 8 characters long";
+    } else {
+      return '';
+    }
+  };
 
   useEffect(() => {
     const checkTokenValidity = async () => {
@@ -27,6 +33,7 @@ const Signup = () => {
               'Content-Type': 'application/json',
             }
           });
+
           if (response.data) {
             navigate('/dashboard');
           }
@@ -35,89 +42,54 @@ const Signup = () => {
         console.error('Token check failed:', error);
       }
     };
+
     checkTokenValidity();
   }, [navigate]);
 
-  const validatePassword = (password) => {
-    return password.length < 8 ? "Password should be at least 8 characters long" : "";
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+  const validationMessage = validatePassword(password);
+  if (validationMessage) {
+    setMessage(validationMessage);
+    return;
+  }
 
-  const sendOtp = async () => {
-    if (!username || !firstname) {
-      setMessage("Please enter email and first name before sending OTP");
-      return;
-    }
+  if (!username || !firstname || !lastname || !password) {
+    setMessage("All fields are required");
+    return;
+  }
 
-    const newOtp = generateOtp();
-    setGeneratedOtp(newOtp);
+  try {
+    const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
+      username,
+      firstname,
+      lastname,
+      password
+    });
 
-    const templateParams = {
-      to_name: firstname,
-      to_email: username, // using username as email
-      otp_code: newOtp,
-    };
+    console.log('Signup Response:', response.data); // 🚀 See response structure
 
-    try {
-      await emailjs.send("service_7qxqc9j", "template_cxw284d", templateParams, "S5Nz21BapCrBFseJN");
-      setIsOtpSent(true);
-      setMessage("OTP sent to your email");
-    } catch (error) {
-      console.error("EmailJS error:", error);
-      setMessage("Failed to send OTP. Please try again.");
-    }
-  };
-
-  const handleOtpVerification = () => {
-    if (otp === generatedOtp) {
-      setIsOtpVerified(true);
-      setMessage("OTP verified successfully");
+    if (response.data && response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      navigate('/dashboard');
     } else {
-      setMessage("Invalid OTP");
+      setMessage('Signup failed: No token received');
     }
+  } catch (error) {
+    console.error("Signup error:", error);
+    if (error.response && error.response.data) {
+      setMessage(error.response.data.msg || "Signup failed");
+    } else {
+      setMessage("An unexpected error occurred");
+    }
+  }
+};
+
+
+  const goToSignIn = () => {
+    navigate('/signin');
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const validationMessage = validatePassword(password);
-    if (validationMessage) {
-      setMessage(validationMessage);
-      return;
-    }
-
-    if (!username || !firstname || !lastname || !password) {
-      setMessage("All fields are required");
-      return;
-    }
-
-    if (!isOtpVerified) {
-      setMessage("Please verify OTP before signup");
-      return;
-    }
-
-    try {
-      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
-        username,
-        firstname,
-        lastname,
-        password
-      });
-
-      if (response.data?.token) {
-        localStorage.setItem("token", response.data.token);
-        navigate('/dashboard');
-      } else {
-        setMessage('Signup failed: No token received');
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-      setMessage(error.response?.data?.msg || "Signup failed");
-    }
-  };
-
-  const goToSignIn = () => navigate('/signin');
 
   return (
     <div className="flex justify-center items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen p-4 text-white">
@@ -126,55 +98,34 @@ const Signup = () => {
           <div className="text-center mb-6">
             <h1 className="text-3xl sm:text-4xl font-bold text-red-500">Sign Up</h1>
             <p className="text-gray-400 text-sm sm:text-base">
-              Enter your email to create an account
+              Enter your information to create an account
             </p>
           </div>
 
+          {/* Input Fields */}
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Email</label>
+              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
               <input
                 id="username"
-                type="email"
-                placeholder="Enter your email"
+                type="text"      // 👈 change this line
+                placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
+                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                autoComplete="username"
               />
             </div>
-
-            <div className="flex justify-between items-center">
-              <button type="button" onClick={sendOtp} className="text-sm text-red-500 hover:underline">
-                {isOtpSent ? "Resend OTP" : "Send OTP"}
-              </button>
-            </div>
-
-            {isOtpSent && !isOtpVerified && (
-              <div>
-                <label htmlFor="otp" className="block text-sm text-gray-300 mb-1">Enter OTP</label>
-                <input
-                  id="otp"
-                  type="text"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
-                />
-                <button type="button" onClick={handleOtpVerification}
-                        className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
-                  Verify OTP
-                </button>
-              </div>
-            )}
-
             <div>
               <label htmlFor="first" className="block text-sm text-gray-300 mb-1">First Name</label>
               <input
                 id="first"
                 type="text"
+                placeholder="Enter your First Name"
                 value={firstname}
                 onChange={(e) => setFirstname(e.target.value)}
-                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
+                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                autoComplete="given-name"
               />
             </div>
             <div>
@@ -182,9 +133,11 @@ const Signup = () => {
               <input
                 id="last"
                 type="text"
+                placeholder="Enter your Last Name"
                 value={lastname}
                 onChange={(e) => setLastname(e.target.value)}
-                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
+                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                autoComplete="family-name"
               />
             </div>
             <div>
@@ -192,28 +145,37 @@ const Signup = () => {
               <input
                 id="password"
                 type="password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
+                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                autoComplete="current-password"
               />
             </div>
           </div>
 
+          {/* Error Message */}
           {message && <div className="text-sm text-red-500 mt-2">{message}</div>}
 
+          {/* Submit Button */}
           <div className="mt-5">
             <button
               type="submit"
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg"
-              disabled={!isOtpVerified}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transform transition-all hover:scale-105"
             >
               Sign Up
             </button>
           </div>
 
+          {/* Footer */}
           <div className="flex justify-center items-center mt-4 text-sm">
             <p className="text-gray-400">Already have an account?</p>
-            <button onClick={goToSignIn} className="text-red-500 hover:underline ml-1">Sign In</button>
+            <button
+              onClick={goToSignIn}
+              className="text-red-500 hover:underline ml-1 focus:outline-none"
+            >
+              Sign In
+            </button>
           </div>
         </form>
       </div>
