@@ -1,133 +1,120 @@
-import Input from "../components/inputs";
-import Heading from "../components/heading";
-import Subheading from "../components/subheading";
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 
-const Signin = () => {
-  const [username, setUsername] = useState("");
+const SERVICE_ID = "service_7qxqc9j";
+const TEMPLATE_ID = "template_cxw284d";
+const PUBLIC_KEY = "S5Nz21BapCrBFseJN";
+
+const SignUp = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [step, setStep] = useState(1); // 1: form, 2: verify
   const [message, setMessage] = useState("");
 
-  const navigate = useNavigate();
-
-  const goToSignUp = () => {
-    navigate('/signup');
+  const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
   };
 
-  useEffect(() => {
-    const checkTokenValidity = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const response = await axios.get("https://sonic-fund-backend.vercel.app/user/check", {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          });
+  const sendOtp = () => {
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
 
-          if (response.data) {
-            navigate('/dashboard');
-          }
-        }
-      } catch (error) {
-        console.error('Token validation failed:', error);
-        // Handle token validation errors, if needed
-      }
+    const templateParams = {
+      user_email: email,
+      otp: otpCode,
     };
 
-    checkTokenValidity();
-  }, [navigate]);
+    emailjs
+      .send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+      .then(() => {
+        setStep(2);
+        setMessage("OTP sent to your email.");
+      })
+      .catch((error) => {
+        console.error("EmailJS error:", error);
+        setMessage("Failed to send OTP.");
+      });
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setMessage("Please enter all fields.");
+      return;
+    }
+    sendOtp();
+  };
 
-    try {
-      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signin",
-        { username, password }, // <-- credentials go here (body)
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
-      );
-
-      localStorage.setItem("token", response.data.token);
-      console.log(response);
-      navigate('/dashboard');
-    } catch (error) {
-      console.error(error);
-      setMessage("Invalid username or password");
+  const handleVerifyOtp = () => {
+    if (otp === generatedOtp) {
+      setMessage("✅ Account created successfully!");
+      // Proceed with registration logic (store in localStorage, redirect, etc.)
+    } else {
+      setMessage("❌ Incorrect OTP.");
     }
   };
 
-
   return (
-    <div className="flex justify-center items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen text-white">
-      <div className="flex bg-gray-900 bg-opacity-70 shadow-lg rounded-3xl w-full max-w-md p-8 backdrop-blur-md">
-        <form className="w-full" onSubmit={handleSubmit}>
-          <h2 className="text-3xl font-extrabold text-center text-red-500">Sign In</h2>
-          <p className="text-center text-gray-400 mb-6">Enter your credentials to sign in to your account</p>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+      <h2 className="text-3xl font-bold mb-6">Sign Up - SonicFund</h2>
 
-          {/* Username Field */}
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-300">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              placeholder="Enter your username"
-              className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-            />
+      {step === 1 && (
+        <form onSubmit={handleRegister} className="flex flex-col gap-4 w-80">
+          <input
+            type="email"
+            placeholder="Email"
+            className="p-2 text-black rounded"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="p-2 text-black rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          {/* Password Field */}
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-          </div>
-
-          {/* Error Message */}
-          <div className="text-sm text-red-500 mb-4">{message}</div>
-
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transform transition-all hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
           >
-            Sign In
+            Send OTP
           </button>
-
-          {/* Footer */}
-          <div className="flex justify-center mt-6 text-sm">
-            <p className="text-gray-400">Don't have an account?</p>
-            <button
-              onClick={goToSignUp}
-              className="text-red-500 hover:underline ml-1 focus:outline-none"
-            >
-              Sign Up
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+      )}
 
+      {step === 2 && (
+        <div className="flex flex-col gap-4 w-80">
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            className="p-2 text-black rounded"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+
+          <button
+            onClick={handleVerifyOtp}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Verify OTP
+          </button>
+          <button
+            onClick={sendOtp}
+            className="text-blue-400 text-sm underline"
+          >
+            Resend OTP
+          </button>
+        </div>
+      )}
+
+      <p className="mt-4 text-red-400">{message}</p>
+    </div>
   );
 };
 
-export default Signin;
+export default SignUp;
