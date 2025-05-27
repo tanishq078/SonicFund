@@ -1,13 +1,17 @@
+import Input from "../components/inputs";
+import Heading from "../components/heading";
+import Subheading from "../components/subheading";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import emailjs from "@emailjs/browser";
 
 const Signup = () => {
-  const [username, setUsername] = useState(""); // used as email
+  const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(""); // Add email field
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -19,23 +23,20 @@ const Signup = () => {
   useEffect(() => {
     const checkTokenValidity = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (token) {
-          const response = await axios.get(
-            "https://sonic-fund-backend.vercel.app/user/check",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
+          const response = await axios.get("https://sonic-fund-backend.vercel.app/user/check", {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
-          );
+          });
           if (response.data) {
-            navigate("/dashboard");
+            navigate('/dashboard');
           }
         }
       } catch (error) {
-        console.error("Token check failed:", error);
+        console.error('Token check failed:', error);
       }
     };
     checkTokenValidity();
@@ -45,7 +46,7 @@ const Signup = () => {
     if (password && password.length < 8) {
       return "Password should be at least 8 characters long";
     } else {
-      return "";
+      return '';
     }
   };
 
@@ -54,26 +55,26 @@ const Signup = () => {
   };
 
   const sendOtp = async () => {
-    if (!username || !firstname) {
-      setMessage("Please enter email (username) and first name before sending OTP");
+    if (!email || !firstname) {
+      setMessage("Please enter email and first name before sending OTP");
       return;
     }
 
-    const otpCode = generateOtp();
-    setGeneratedOtp(otpCode);
+    const newOtp = generateOtp();
+    setGeneratedOtp(newOtp);
 
     const templateParams = {
       to_name: firstname,
-      to_email: username, // username used as email
-      otp_code: otpCode,
+      to_email: email,
+      otp_code: newOtp,
     };
 
     try {
       await emailjs.send(
-        "service_7qxqc9j",
-        "template_cxw284d",
+        "your_service_id",
+        "your_template_id",
         templateParams,
-        "S5Nz21BapCrBFseJN"
+        "your_public_key"
       );
       setIsOtpSent(true);
       setMessage("OTP sent to your email");
@@ -101,7 +102,7 @@ const Signup = () => {
       return;
     }
 
-    if (!username || !firstname || !lastname || !password) {
+    if (!username || !firstname || !lastname || !password || !email) {
       setMessage("All fields are required");
       return;
     }
@@ -112,21 +113,18 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(
-        "https://sonic-fund-backend.vercel.app/user/signup",
-        {
-          username,
-          firstname,
-          lastname,
-          password,
-        }
-      );
+      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
+        username,
+        firstname,
+        lastname,
+        password
+      });
 
       if (response.data && response.data.token) {
         localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
+        navigate('/dashboard');
       } else {
-        setMessage("Signup failed: No token received");
+        setMessage('Signup failed: No token received');
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -139,7 +137,7 @@ const Signup = () => {
   };
 
   const goToSignIn = () => {
-    navigate("/signin");
+    navigate('/signin');
   };
 
   return (
@@ -154,15 +152,15 @@ const Signup = () => {
           </div>
 
           <div className="space-y-4">
-            {/* Username as Email */}
+            {/* Email */}
             <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Email</label>
+              <label htmlFor="email" className="block text-sm text-gray-300 mb-1">Email</label>
               <input
-                id="username"
+                id="email"
                 type="email"
                 placeholder="Enter your email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
@@ -188,7 +186,7 @@ const Signup = () => {
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg"
+                  className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
                 <button
                   type="button"
@@ -201,6 +199,17 @@ const Signup = () => {
             )}
 
             {/* Other Inputs */}
+            <div>
+              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
+              <input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
             <div>
               <label htmlFor="first" className="block text-sm text-gray-300 mb-1">First Name</label>
               <input
