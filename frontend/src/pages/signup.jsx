@@ -7,12 +7,13 @@ import axios from "axios";
 import emailjs from "@emailjs/browser";
 
 const Signup = () => {
+  const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(""); // Email is also used as username
+  const [email, setEmail] = useState(""); // Email input, still needed to send OTP
   const [otp, setOtp] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [userOtpMap, setUserOtpMap] = useState({}); // Store OTPs per username
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [message, setMessage] = useState("");
@@ -22,20 +23,23 @@ const Signup = () => {
   useEffect(() => {
     const checkTokenValidity = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
-          const response = await axios.get("https://sonic-fund-backend.vercel.app/user/check", {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
+          const response = await axios.get(
+            "https://sonic-fund-backend.vercel.app/user/check",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
-          });
+          );
           if (response.data) {
-            navigate('/dashboard');
+            navigate("/dashboard");
           }
         }
       } catch (error) {
-        console.error('Token check failed:', error);
+        console.error("Token check failed:", error);
       }
     };
     checkTokenValidity();
@@ -45,7 +49,7 @@ const Signup = () => {
     if (password && password.length < 8) {
       return "Password should be at least 8 characters long";
     } else {
-      return '';
+      return "";
     }
   };
 
@@ -54,13 +58,15 @@ const Signup = () => {
   };
 
   const sendOtp = async () => {
-    if (!email || !firstname) {
-      setMessage("Please enter email and first name before sending OTP");
+    if (!email || !firstname || !username) {
+      setMessage("Please enter email, first name, and username before sending OTP");
       return;
     }
 
     const newOtp = generateOtp();
-    setGeneratedOtp(newOtp);
+
+    // Store OTP mapped to username
+    setUserOtpMap((prev) => ({ ...prev, [username]: newOtp }));
 
     const templateParams = {
       to_name: firstname,
@@ -84,7 +90,8 @@ const Signup = () => {
   };
 
   const handleOtpVerification = () => {
-    if (otp === generatedOtp) {
+    const storedOtp = userOtpMap[username];
+    if (otp === storedOtp) {
       setIsOtpVerified(true);
       setMessage("OTP verified successfully");
     } else {
@@ -101,7 +108,7 @@ const Signup = () => {
       return;
     }
 
-    if (!email || !firstname || !lastname || !password) {
+    if (!username || !firstname || !lastname || !password || !email) {
       setMessage("All fields are required");
       return;
     }
@@ -112,18 +119,21 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
-        username: email,  // Email is being used as the username
-        firstname,
-        lastname,
-        password
-      });
+      const response = await axios.post(
+        "https://sonic-fund-backend.vercel.app/user/signup",
+        {
+          username,
+          firstname,
+          lastname,
+          password,
+        }
+      );
 
       if (response.data && response.data.token) {
         localStorage.setItem("token", response.data.token);
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        setMessage('Signup failed: No token received');
+        setMessage("Signup failed: No token received");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -136,7 +146,7 @@ const Signup = () => {
   };
 
   const goToSignIn = () => {
-    navigate('/signin');
+    navigate("/signin");
   };
 
   return (
@@ -198,6 +208,17 @@ const Signup = () => {
             )}
 
             {/* Other Inputs */}
+            <div>
+              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
+              <input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
             <div>
               <label htmlFor="first" className="block text-sm text-gray-300 mb-1">First Name</label>
               <input
