@@ -2,6 +2,7 @@ import Input from "../components/inputs";
 import Heading from "../components/heading";
 import Subheading from "../components/subheading";
 import { useNavigate } from "react-router-dom";
+import emailjs from '@emailjs/browser';
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -46,6 +47,8 @@ const Signup = () => {
     checkTokenValidity();
   }, [navigate]);
 
+
+
 const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -61,34 +64,38 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
+    // 1. Generate OTP
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 2. Send OTP via EmailJS
+    await emailjs.send(
+      "service_7qxqc9j",       // ✅ replace with your actual service ID
+      "template_cxw284d",      // ✅ replace with your actual template ID
+      {
+        to_email: username,
+        otp_code: generatedOtp
+      },
+      "S5Nz21BapCrBFseJN"        // ✅ replace with your actual EmailJS public key
+    );
+
+    // 3. Store pending signup data temporarily
+    localStorage.setItem("pendingSignup", JSON.stringify({
       username,
       firstname,
       lastname,
-      password
-    });
+      password,
+      otp: generatedOtp
+    }));
 
-    console.log('Signup Response:', response.data); // 🚀 See response structure
+    // 4. Navigate to OTP verification
+    navigate('/otp-verification');
 
-    if (response.data && response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      
-      // Redirect to OTP Verification Page with email in state
-      navigate('/otp-verification', {
-        state: { email: username }
-      });
-    } else {
-      setMessage('Signup failed: No token received');
-    }
   } catch (error) {
-    console.error("Signup error:", error);
-    if (error.response && error.response.data) {
-      setMessage(error.response.data.msg || "Signup failed");
-    } else {
-      setMessage("An unexpected error occurred");
-    }
+    console.error("Error during OTP send:", error);
+    setMessage("Failed to send OTP. Please try again.");
   }
 };
+
 
 
 
