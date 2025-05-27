@@ -7,11 +7,10 @@ import axios from "axios";
 import emailjs from "@emailjs/browser";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(""); // Add email field
+  const [email, setEmail] = useState(""); // Email is also used as username
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -102,7 +101,7 @@ const Signup = () => {
       return;
     }
 
-    if (!username || !firstname || !lastname || !password || !email) {
+    if (!email || !firstname || !lastname || !password) {
       setMessage("All fields are required");
       return;
     }
@@ -114,7 +113,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post("https://sonic-fund-backend.vercel.app/user/signup", {
-        username,
+        username: email,  // Email is being used as the username
         firstname,
         lastname,
         password
@@ -199,17 +198,6 @@ const Signup = () => {
             )}
 
             {/* Other Inputs */}
-            <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
-              <input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-            </div>
             <div>
               <label htmlFor="first" className="block text-sm text-gray-300 mb-1">First Name</label>
               <input
