@@ -74,12 +74,12 @@ const Signin = () => {
           {/* Username Field */}
           <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-medium text-gray-300">
-              Username
+              Email
             </label>
             <input
               type="text"
               id="username"
-              placeholder="Enter your username"
+              placeholder="Enter your Email"
               className="w-full p-3 mt-1 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"

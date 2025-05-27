@@ -117,11 +117,11 @@ const handleSubmit = async (e) => {
           {/* Input Fields */}
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Username</label>
+              <label htmlFor="username" className="block text-sm text-gray-300 mb-1">Email</label>
               <input
                 id="username"
                 type="text"      // 👈 change this line
-                placeholder="Enter your username"
+                placeholder="Enter your Email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full p-3 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
