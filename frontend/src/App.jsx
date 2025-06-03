@@ -1,4 +1,7 @@
 import Dashboard from "./pages/dashboard";
+import Transactions from "./pages/Transactions"; // ✅ Make sure this exists
+import Pay from "./pages/Pay";
+import Account from "./pages/Account";
 import Signin from "./pages/signin";
 import Signup from "./pages/signup";
 import OtpVerification from "./pages/OtpVerification";
