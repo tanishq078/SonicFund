@@ -110,12 +110,42 @@ const Dashboard = () => {
   };
 
   // Define the essential sidebar items
-  const essentialSidebarItems = [
-    "Dashboard",
-    "Transactions",
-    "Pay",
-    "Account",
-  ];
+  essentialSidebarItems.map((item, idx) => (
+  <li
+    key={idx}
+    className={`
+      px-4 py-2
+      text-gray-400 hover:bg-red-600 hover:text-white
+      cursor-pointer transition-colors duration-300 rounded-lg
+      select-none
+      ${activeMenuItem === item ? 'bg-red-700 text-white font-bold' : ''}
+    `}
+    onClick={() => {
+      setActiveMenuItem(item);
+
+      // 🔁 Navigate based on item name
+      switch (item) {
+        case "Dashboard":
+          navigate("/dashboard");
+          break;
+        case "Transactions":
+          navigate("/transactions");
+          break;
+        case "Pay":
+          navigate("/pay");
+          break;
+        case "Account":
+          navigate("/account");
+          break;
+        default:
+          break;
+      }
+    }}
+  >
+    {item}
+  </li>
+));
+
 
   return (
     <div className="flex h-screen bg-gray-950 text-gray-200">
@@ -180,7 +210,7 @@ const Dashboard = () => {
         "
       >
         {/* Sticky Header */}
-        <div className="sticky top-0 bg-red-700 bg-opacity-90 z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
+        <div className="sticky top-0 bg-red-500 bg-opacity-90 z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-50 tracking-wider">
