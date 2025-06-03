@@ -115,6 +115,7 @@ const Dashboard = () => {
     "Transactions",
     "Pay",
     "Account",
+    "ChatBOT",  // <-- Added ChatBOT here
   ];
 
   return (
@@ -164,6 +165,9 @@ const Dashboard = () => {
                       break;
                     case "Account":
                       navigate("/account");
+                      break;
+                    case "ChatBOT":
+                      window.open("https://your-chatbot-url.onrender.com", "_blank");
                       break;
                     default:
                       break;
