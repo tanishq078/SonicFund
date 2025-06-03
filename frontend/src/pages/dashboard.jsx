@@ -110,42 +110,12 @@ const Dashboard = () => {
   };
 
   // Define the essential sidebar items
-  essentialSidebarItems.map((item, idx) => (
-  <li
-    key={idx}
-    className={`
-      px-4 py-2
-      text-gray-400 hover:bg-red-600 hover:text-white
-      cursor-pointer transition-colors duration-300 rounded-lg
-      select-none
-      ${activeMenuItem === item ? 'bg-red-700 text-white font-bold' : ''}
-    `}
-    onClick={() => {
-      setActiveMenuItem(item);
-
-      // 🔁 Navigate based on item name
-      switch (item) {
-        case "Dashboard":
-          navigate("/dashboard");
-          break;
-        case "Transactions":
-          navigate("/transactions");
-          break;
-        case "Pay":
-          navigate("/pay");
-          break;
-        case "Account":
-          navigate("/account");
-          break;
-        default:
-          break;
-      }
-    }}
-  >
-    {item}
-  </li>
-));
-
+  const essentialSidebarItems = [
+    "Dashboard",
+    "Transactions",
+    "Pay",
+    "Account",
+  ];
 
   return (
     <div className="flex h-screen bg-gray-950 text-gray-200">
@@ -172,17 +142,38 @@ const Dashboard = () => {
               <li
                 key={idx}
                 className={`
-                  px-4 py-2
-                  text-gray-400 hover:bg-red-600 hover:text-white
-                  cursor-pointer transition-colors duration-300 rounded-lg
-                  select-none
-                  ${activeMenuItem === item ? 'bg-red-700 text-white font-bold' : ''}
-                `}
-                onClick={() => setActiveMenuItem(item)}
+      px-4 py-2
+      text-gray-400 hover:bg-red-600 hover:text-white
+      cursor-pointer transition-colors duration-300 rounded-lg
+      select-none
+      ${activeMenuItem === item ? 'bg-red-700 text-white font-bold' : ''}
+    `}
+                onClick={() => {
+                  setActiveMenuItem(item);
+
+                  // 🔁 Navigate based on item name
+                  switch (item) {
+                    case "Dashboard":
+                      navigate("/dashboard");
+                      break;
+                    case "Transactions":
+                      navigate("/transactions");
+                      break;
+                    case "Pay":
+                      navigate("/pay");
+                      break;
+                    case "Account":
+                      navigate("/account");
+                      break;
+                    default:
+                      break;
+                  }
+                }}
               >
                 {item}
               </li>
             ))}
+
           </ul>
         </nav>
         {/* Logout */}
@@ -210,24 +201,24 @@ const Dashboard = () => {
         "
       >
         {/* Sticky Header */}
-        <div className="sticky top-0 bg-red-500 bg-opacity-90 z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
+        <div className="sticky top-0 bg-red-500 bg-opacity-80 z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-50 tracking-wider">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-wider">
                 Welcome Back, {firstname}!
               </h2>
-              <p className="text-gray-400 mt-1 text-lg">
+              <p className="text-white mt-1 text-lg">
                 Last Received:{" "}
-                <span className="text-green-400">
+                <span className="text-green-200">
                   ₹{(Math.floor(Math.random() * 900) + 100).toLocaleString()}
                 </span>
               </p>
             </div>
             <div className="text-center md:text-right">
-              <h3 className="text-4xl md:text-6xl font-black text-gray-50">
+              <h3 className="text-4xl md:text-6xl font-black text-white">
                 ₹{data?.toLocaleString()}
               </h3>
-              <p className="text-gray-500">Total Balance</p>
+              <p className="text-white text-opacity-80">Total Balance</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-4 mt-6 justify-center md:justify-start">
@@ -235,16 +226,17 @@ const Dashboard = () => {
               <button
                 key={i}
                 className="
-                  px-5 py-2 bg-gray-800 text-gray-200 font-bold uppercase
-                  rounded-lg shadow-lg hover:bg-red-600 hover:scale-105
-                  transition-all duration-300 select-none
-                "
+          px-5 py-2 bg-black bg-opacity-30 text-white font-bold uppercase
+          rounded-lg shadow-lg hover:bg-black hover:bg-opacity-50 hover:scale-105
+          transition-all duration-300 select-none
+        "
               >
                 {btn}
               </button>
             ))}
           </div>
         </div>
+
 
         {/* Linked Payment Systems */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
