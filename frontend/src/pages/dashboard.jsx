@@ -10,19 +10,17 @@ const Dashboard = () => {
   const [username, setUsername] = useState("user@user");
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
-
+  
   // State to manage the active sidebar menu item
   const [activeMenuItem, setActiveMenuItem] = useState("Dashboard");
 
-  // Original useEffect for fetching balance
+  // Fetch balance effect
   useEffect(() => {
     const token = localStorage.getItem('token');
-
     if (!token) {
-      navigate('/'); // Redirect to login if no token is found
+      navigate('/'); // Redirect to login if no token
       return;
     }
-
     const fetchData = async () => {
       try {
         const response = await axios.get('https://sonic-fund-backend.vercel.app/account/balance', {
@@ -37,20 +35,17 @@ const Dashboard = () => {
         navigate('/');
       }
     };
-
     fetchData();
   }, [navigate]);
 
-  // Original useEffect for fetching user info
+  // Fetch user info effect
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem('token');
-
       if (!token) {
         console.error('No token found, user is not authenticated');
         return;
       }
-
       try {
         const response = await axios.get("https://sonic-fund-backend.vercel.app/user/info", {
           headers: {
@@ -58,9 +53,6 @@ const Dashboard = () => {
             'Content-Type': 'application/json',
           }
         });
-        console.log("User Info Response:", response.data);
-
-        // Ensure response data is valid and contains 'user' object
         if (response && response.data && response.data.user) {
           setFirstname(response.data.user.firstname);
           setLastname(response.data.user.lastname);
@@ -72,20 +64,17 @@ const Dashboard = () => {
         console.error('Error fetching user info:', error);
       }
     };
-
     fetchUserInfo();
   }, []);
 
-  // Original useEffect for fetching all users with filter
+  // Fetch all users (with filter) effect
   useEffect(() => {
     const fetchAllUsers = async () => {
       const token = localStorage.getItem('token');
-
       if (!token) {
         console.error('No token found, user is not authenticated');
         return;
       }
-
       try {
         const response = await axios.get(`https://sonic-fund-backend.vercel.app/user/bulk?filter=${filter}`, {
           headers: {
@@ -93,22 +82,19 @@ const Dashboard = () => {
             'Content-Type': 'application/json',
           },
         });
-
-        // Check if response and response.data are valid
         if (response && response.data && Array.isArray(response.data.users)) {
           setUsers(response.data.users);
         } else {
           console.error('Invalid data format:', response.data);
-          setUsers([]);  // Clear users in case of invalid data
+          setUsers([]);
         }
       } catch (error) {
         console.error('Error fetching all users:', error);
-        setUsers([]);  // Clear users in case of error
+        setUsers([]);
       }
     };
-
     fetchAllUsers();
-  }, [filter]); // Dependency on filter remains for real-time search
+  }, [filter]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -118,9 +104,8 @@ const Dashboard = () => {
   const goToTransfer = (user) => {
     const queryParams = new URLSearchParams({
       id: user._id,
-      name: user.firstname
+      name: user.firstname,
     }).toString();
-
     navigate(`/transfer?${queryParams}`);
   };
 
@@ -133,7 +118,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-950 text-gray-200">
+    <div className="flex h-screen bg-gray-950 text-gray-200">
       {/* Sidebar */}
       <aside
         className="
@@ -143,6 +128,7 @@ const Dashboard = () => {
           overflow-y-auto
           scrollbar-thin scrollbar-thumb-red-700 scrollbar-track-gray-900
           transition-all duration-300
+          sticky top-0 h-screen
         "
       >
         <div className="p-5 text-center border-b border-gray-800">
@@ -152,7 +138,6 @@ const Dashboard = () => {
         </div>
         <nav className="flex-1 mt-3">
           <ul className="space-y-1 px-3">
-            {/* Map over essentialSidebarItems to render the sidebar */}
             {essentialSidebarItems.map((item, idx) => (
               <li
                 key={idx}
@@ -163,7 +148,7 @@ const Dashboard = () => {
                   select-none
                   ${activeMenuItem === item ? 'bg-red-700 text-white font-bold' : ''}
                 `}
-                onClick={() => setActiveMenuItem(item)} // Set active item on click
+                onClick={() => setActiveMenuItem(item)}
               >
                 {item}
               </li>
@@ -188,18 +173,15 @@ const Dashboard = () => {
       {/* Main Content */}
       <main
         className="
-          flex-1 p-6
+          flex-1 h-full p-4 sm:p-6
           bg-gray-900 bg-opacity-90 backdrop-blur-md
-          shadow-inner
-          overflow-y-auto
+          shadow-inner overflow-y-auto
           scrollbar-thin scrollbar-thumb-red-600 scrollbar-track-gray-800
-          max-h-screen
         "
       >
-        {/* Header */}
-        <div className="bg-gradient-to-br from-black via-red-800 to-gray-800 p-6 rounded-xl shadow-2xl mb-6 select-none">
+        {/* Sticky Header */}
+        <div className="sticky top-0 bg-gray-900 bg-opacity-90 backdrop-blur-md z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            {/* Welcome and Last Received */}
             <div>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-50 tracking-wider">
                 Welcome Back, {firstname}!
@@ -211,7 +193,6 @@ const Dashboard = () => {
                 </span>
               </p>
             </div>
-            {/* Real-time Total Balance */}
             <div className="text-center md:text-right">
               <h3 className="text-4xl md:text-6xl font-black text-gray-50">
                 ₹{data?.toLocaleString()}
@@ -219,7 +200,6 @@ const Dashboard = () => {
               <p className="text-gray-500">Total Balance</p>
             </div>
           </div>
-
           <div className="flex flex-wrap gap-4 mt-6 justify-center md:justify-start">
             {["Transfer Money", "Add Money", "Withdraw"].map((btn, i) => (
               <button
@@ -227,8 +207,7 @@ const Dashboard = () => {
                 className="
                   px-5 py-2 bg-gray-800 text-gray-200 font-bold uppercase
                   rounded-lg shadow-lg hover:bg-red-600 hover:scale-105
-                  transition-all duration-300
-                  select-none
+                  transition-all duration-300 select-none
                 "
               >
                 {btn}
@@ -278,23 +257,23 @@ const Dashboard = () => {
               "
               type="text"
               placeholder="Search Users..."
-              value={filter} // Bind input value to filter state for controlled component
+              value={filter}
             />
           </div>
         </div>
 
-        {/* User List */}
+        {/* User List with resizable scroll area */}
         <div>
           <h3 className="text-2xl font-semibold mb-4 text-gray-300">Users List</h3>
-          <div className="space-y-4 max-h-[40vh] overflow-y-auto scrollbar-thin scrollbar-thumb-red-600 scrollbar-track-gray-800 rounded-md">
+          <div className="max-h-[40vh] md:max-h-[50vh] overflow-y-auto scrollbar-thin scrollbar-thumb-red-600 scrollbar-track-gray-800 rounded-md resize-y">
             {users.length > 0 ? (
               users.map((user, idx) => (
                 <div
                   key={idx}
                   className="
-                    flex justify-between items-center bg-gray-800 bg-opacity-75 p-4
+                    flex flex-col sm:flex-row justify-between items-center bg-gray-800 bg-opacity-75 p-4
                     rounded-lg shadow-lg hover:bg-gray-700
-                    transition-all duration-300 select-none
+                    transition-all duration-300 select-none mb-3
                   "
                 >
                   <div className="flex items-center">
@@ -316,7 +295,7 @@ const Dashboard = () => {
                   <button
                     onClick={() => goToTransfer(user)}
                     className="
-                      px-4 py-2 bg-red-700 text-white font-semibold rounded-lg
+                      mt-3 sm:mt-0 px-4 py-2 bg-red-700 text-white font-semibold rounded-lg
                       hover:bg-red-600 hover:scale-105 transition-all duration-300
                       select-none
                     "
