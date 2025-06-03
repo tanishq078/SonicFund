@@ -28,14 +28,57 @@ const Account = () => {
     fetchData();
   }, []);
 
+  // Dummy additional details (fallback if user info doesn't have them)
+  const phone = user.phone || "+91 98765 43210";
+  const address = user.address || "123, Green Street, Lucknow, UP, India";
+  const accountType = user.accountType || "Savings Account";
+  const joinedDate = user.joinedDate || "2023-01-15";
+
   return (
-    <div className="p-6 text-gray-200">
-      <h2 className="text-3xl font-bold text-red-500 mb-6">Account Details</h2>
-      <div className="bg-gray-800 rounded-lg shadow-xl p-6 space-y-4">
-        <p><span className="text-gray-400">Name:</span> {user.firstname} {user.lastname}</p>
-        <p><span className="text-gray-400">Username:</span> {user.username}</p>
-        <p><span className="text-gray-400">Email:</span> {user.username}</p>
-        <p className="text-2xl font-bold text-green-400">Balance: ₹{balance.toLocaleString()}</p>
+    <div className="flex-1 h-full p-6 sm:p-8 bg-gray-900 bg-opacity-90 text-gray-200 overflow-y-auto">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-4xl font-extrabold text-red-600 tracking-wide mb-2">Account Details</h2>
+        <p className="text-gray-400 text-sm">Here’s your personal account information and balance.</p>
+      </div>
+
+      {/* Account Info Card */}
+      <div className="bg-gray-800 rounded-lg shadow-xl p-6 space-y-5 max-w-md mx-auto">
+        <div>
+          <p className="text-lg text-gray-400 font-semibold">Name</p>
+          <p className="text-white text-2xl font-bold">{user.firstname} {user.lastname}</p>
+        </div>
+
+        <div>
+          <p className="text-lg text-gray-400 font-semibold">Email</p>
+          <p className="text-white text-lg">{user.email || user.username}</p>
+        </div>
+
+        <div>
+          <p className="text-lg text-gray-400 font-semibold">Phone</p>
+          <p className="text-white text-lg">{phone}</p>
+        </div>
+
+        <div>
+          <p className="text-lg text-gray-400 font-semibold">Address</p>
+          <p className="text-white text-lg">{address}</p>
+        </div>
+
+        <div>
+          <p className="text-lg text-gray-400 font-semibold">Account Type</p>
+          <p className="text-white text-lg">{accountType}</p>
+        </div>
+
+        <div>
+          <p className="text-lg text-gray-400 font-semibold">Member Since</p>
+          <p className="text-white text-lg">{new Date(joinedDate).toLocaleDateString()}</p>
+        </div>
+
+        <div className="pt-4 border-t border-gray-700">
+          <p className="text-3xl font-extrabold text-green-400">
+            Balance: ₹{balance.toLocaleString()}
+          </p>
+        </div>
       </div>
     </div>
   );
