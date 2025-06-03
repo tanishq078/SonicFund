@@ -66,7 +66,12 @@ const Transfer = () => {
         }
       );
 
-      navigate("/success");
+      navigate("/success", {
+        state: {
+          amount: numericAmount,
+          recipient: name,
+        },
+      });
     } catch (error) {
       const errMsg =
         error.response?.data?.message || "Error occurred while transferring money";
@@ -118,9 +123,8 @@ const Transfer = () => {
         {/* Transfer Button */}
         <div
           onClick={transfer}
-          className={`flex bg-gradient-to-br from-red-700 to-black w-full mt-4 cursor-pointer rounded-lg text-white text-lg h-12 justify-center items-center font-bold shadow-lg transition-transform duration-300 ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:scale-105 hover:from-red-800 hover:to-gray-900"
-          }`}
+          className={`flex bg-gradient-to-br from-red-700 to-black w-full mt-4 cursor-pointer rounded-lg text-white text-lg h-12 justify-center items-center font-bold shadow-lg transition-transform duration-300 ${loading ? "opacity-50 cursor-not-allowed" : "hover:scale-105 hover:from-red-800 hover:to-gray-900"
+            }`}
         >
           {loading ? "Transferring..." : "Initiate Transfer"}
         </div>
