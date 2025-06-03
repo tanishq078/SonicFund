@@ -37,11 +37,15 @@ const Pay = () => {
   };
 
   return (
-    <div className="flex-1 h-full p-6 sm:p-8 bg-gray-900 bg-opacity-90 text-gray-200 overflow-y-auto">
+    <div className="min-h-screen flex-1 p-6 sm:p-8 bg-gray-900 bg-opacity-90 text-gray-200 overflow-y-auto">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-4xl font-extrabold text-red-600 tracking-wide mb-2">Send Money</h2>
-        <p className="text-gray-400 text-sm">Search for a user and initiate a transfer.</p>
+        <h2 className="text-4xl font-extrabold text-red-600 tracking-wide mb-2">
+          Send Money
+        </h2>
+        <p className="text-gray-400 text-sm">
+          Search for a user and initiate a transfer.
+        </p>
       </div>
 
       {/* Search Input */}

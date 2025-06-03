@@ -1,6 +1,6 @@
 import React from "react";
 
-// More detailed dummy data, using names from your screenshot
+// More detailed dummy data
 const dummyTransactions = [
   {
     id: 1,
@@ -59,7 +59,7 @@ const dummyTransactions = [
 ];
 
 const Transactions = () => {
-  // Compute a simple summary (e.g., total credits vs debits)
+  // Compute total credits and debits
   const totalCredits = dummyTransactions
     .filter((tx) => tx.type === "Credit")
     .reduce((sum, tx) => sum + tx.amount, 0);
@@ -68,7 +68,7 @@ const Transactions = () => {
     .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <div className="flex-1 h-full p-4 sm:p-6 bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-inner overflow-y-auto">
+    <div className="min-h-screen p-4 sm:p-6 bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-inner overflow-y-auto">
       {/* Sticky Header */}
       <div className="sticky top-0 bg-red-700 bg-opacity-90 text-gray-50 z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -121,9 +121,7 @@ const Transactions = () => {
                   idx % 2 === 0 ? "bg-gray-800" : "bg-gray-700"
                 } hover:bg-gray-600 transition duration-200`}
               >
-                <td className="px-4 py-3 text-gray-200">
-                  {tx.date}
-                </td>
+                <td className="px-4 py-3 text-gray-200">{tx.date}</td>
                 <td
                   className={`px-4 py-3 font-semibold ${
                     tx.type === "Credit" ? "text-green-400" : "text-red-400"
@@ -134,12 +132,8 @@ const Transactions = () => {
                 <td className="px-4 py-3 text-gray-200">
                   ₹{tx.amount.toLocaleString()}
                 </td>
-                <td className="px-4 py-3 text-gray-200">
-                  {tx.sender}
-                </td>
-                <td className="px-4 py-3 text-gray-200">
-                  {tx.receiver}
-                </td>
+                <td className="px-4 py-3 text-gray-200">{tx.sender}</td>
+                <td className="px-4 py-3 text-gray-200">{tx.receiver}</td>
                 <td
                   className={`px-4 py-3 font-medium ${
                     tx.status === "Completed"
