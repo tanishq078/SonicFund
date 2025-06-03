@@ -10,7 +10,7 @@ const Dashboard = () => {
   const [username, setUsername] = useState("user@user");
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
-  
+
   // State to manage the active sidebar menu item
   const [activeMenuItem, setActiveMenuItem] = useState("Dashboard");
 
@@ -180,7 +180,7 @@ const Dashboard = () => {
         "
       >
         {/* Sticky Header */}
-        <div className="sticky top-0 bg-gray-900 bg-opacity-90 backdrop-blur-md z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
+        <div className="sticky top-0 bg-red-700 bg-opacity-95 z-10 p-4 sm:p-6 rounded-xl shadow-2xl mb-6 select-none">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-50 tracking-wider">
